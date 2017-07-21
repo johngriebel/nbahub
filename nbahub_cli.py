@@ -5,9 +5,11 @@ from nba_py.constants import PerMode
 from nba_py.league import PlayerStats
 from nba_py.player import PlayerList
 
+from nba_stats_api.playtypes import PlayTypeHandler
 from nba_stats_api.utils import (get_shooting_stats,
                                  convert_dict,
                                  calc_extra_shooting_stats)
+from nba_stats_api.constants import ALL_PLAY_TYPES
 
 
 @click.group()
@@ -34,6 +36,22 @@ def update_all():
                 player_stats_dict[player_id] = {}
 
             player_stats_dict[player_id][per_mode] = new_row
+
+    play_type_handler = PlayTypeHandler(year="2016",
+                                        season_type="Reg")
+    for play_type in ALL_PLAY_TYPES:
+        print(f"Working on {play_type}")
+        play_type_handler.fetch_json(play_type)
+
+        for player_id in play_type_handler.json:
+            player_name = play_type_handler.json[player_id]['PLAYER_NAME']
+            if player_id not in player_stats_dict:
+                print(f"{player_name} has entries for PlayType Statistics, but not"
+                      f"traditional stats. Skipping this player.")
+                continue
+            player_stats_dict[player_id][play_type] = play_type_handler.json[player_id]
+
+        time.sleep(1)
 
     player_list = PlayerList(season="2016-17",
                              only_current=1)

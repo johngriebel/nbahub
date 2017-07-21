@@ -15,7 +15,8 @@ def get_shooting_stats(player_id, season):
 
 
 def convert_dict(to_convert):
-    return {key: to_convert[key] for key in to_convert if "rank" not in key.lower()}
+    converted = {key: to_convert[key] for key in to_convert if "rank" not in key.lower()}
+    return converted
 
 
 def calc_true_shooting(player_stats_dict):
