@@ -1,11 +1,13 @@
-import click
 import time
-from nba_py.player import PlayerList
-from nba_py.league import PlayerStats
+
+import click
 from nba_py.constants import PerMode
-from nba_stats import (get_shooting_stats,
-                       convert_dict,
-                       calc_extra_shooting_stats)
+from nba_py.league import PlayerStats
+from nba_py.player import PlayerList
+
+from nba_stats_api.utils import (get_shooting_stats,
+                                 convert_dict,
+                                 calc_extra_shooting_stats)
 
 
 @click.group()
