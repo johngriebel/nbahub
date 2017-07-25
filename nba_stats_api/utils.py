@@ -1,5 +1,10 @@
+import requests
+import re
 from decimal import Decimal
+from bs4 import BeautifulSoup
 from nba_py.player import PlayerShootingSplits
+from nba_stats_api.constants import BasketballReference
+comm = re.compile("<!--|-->")
 
 
 class Player:
@@ -48,3 +53,21 @@ def calc_extra_shooting_stats(player_stats_dict):
     player_stats_dict['Shooting']['3PAr'] = calc_three_point_attempt_rate(player_stats_dict)
     player_stats_dict['Shooting']['FTr'] = calc_free_throw_attempt_rate(player_stats_dict)
     player_stats_dict['Shooting']['2PT_PCT'] = calc_two_pt_percentage(player_stats_dict)
+
+
+def get_advanced_stats(bbref_id, season="2016-17"):
+    url = BasketballReference.BaseURL + BasketballReference.PlayersEndpoint + bbref_id[0] + f"/{bbref_id}.html"
+    response = requests.get(url)
+    html = response.text
+    cleaned_soup = BeautifulSoup(re.sub("<!--|-->", "", html), "html5lib")
+    advanced_table = cleaned_soup.find("table", {'id': "advanced"})
+    body = advanced_table.find("tbody")
+    rows = body.find_all("tr")
+
+    for row in rows:
+        season_cell = row.find(attrs={'data-stat': "season"})
+        if season_cell.text == season:
+            cells = row.find_all("td")
+            stats_dict = {tag.attrs['data-stat']: tag.text for tag in cells if
+                          tag.attrs['data-stat'].lower() not in ["yyy", "xxx"]}
+            return stats_dict

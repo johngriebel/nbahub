@@ -1,5 +1,9 @@
 
 
+class BasketballReference:
+    BaseURL = "https://www.basketball-reference.com"
+    PlayersEndpoint = "/players/"
+
 # Note that {year} refers to the pre-New Year's portion of the season in question.
 # For example, if you want 2016-17 stats, year = 2016.
 PlayTypeBase = ("http://stats-prod.nba.com/wp-json/statscms/v1/synergy/player/?"

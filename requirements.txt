@@ -2,3 +2,4 @@ https://github.com/seemethere/nba_py/archive/master.zip
 requests
 click
 beautifulsoup4
+html5lib

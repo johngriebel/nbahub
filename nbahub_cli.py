@@ -1,5 +1,5 @@
 import time
-
+import json
 import click
 from nba_py.constants import PerMode
 from nba_py.league import PlayerStats
@@ -8,7 +8,8 @@ from nba_py.player import PlayerList
 from nba_stats_api.playtypes import PlayTypeHandler
 from nba_stats_api.utils import (get_shooting_stats,
                                  convert_dict,
-                                 calc_extra_shooting_stats)
+                                 calc_extra_shooting_stats,
+                                 get_advanced_stats)
 from nba_stats_api.constants import ALL_PLAY_TYPES
 
 
@@ -55,14 +56,23 @@ def update_all():
 
     player_list = PlayerList(season="2016-17",
                              only_current=1)
-    for player in player_list.info()[:5]:
-        player_id = player['PERSON_ID']
-        print(f"Working on shooting for {player_id}")
-        shooting = get_shooting_stats(player_id=player_id,
-                                      season="2016-17")
-        player_stats_dict[player_id]['Shooting'] = convert_dict(shooting)
-        calc_extra_shooting_stats(player_stats_dict[player_id])
-        time.sleep(2.5)
+    with open("bbref_id_map.json", "r") as bbref_file:
+        bbref_id_map = json.loads(bbref_file.read())
+        for player in player_list.info()[:5]:
+            player_id = player['PERSON_ID']
+            player_name = player['DISPLAY_FIRST_LAST']
+            print(f"Working on shooting for {player_name}")
+            shooting = get_shooting_stats(player_id=player_id,
+                                          season="2016-17")
+            player_stats_dict[player_id]['Shooting'] = convert_dict(shooting)
+            calc_extra_shooting_stats(player_stats_dict[player_id])
+
+            bbref_id = bbref_id_map[str(player_id)]
+            print(f"Working on advanced for {player_name}")
+            advanced_stats = get_advanced_stats(bbref_id, season="2016-17")
+            player_stats_dict[player_id]['Advanced'] = advanced_stats
+
+            time.sleep(2.5)
 
     for player in player_stats_dict:
         this_player_stats = player_stats_dict[player]
