@@ -9,7 +9,9 @@ from nba_py.player import PlayerShootingSplits, PlayerList
 from nba_py.league import PlayerStats
 from nba_py.constants import PerMode
 from nba_stats_api.playtypes import PlayTypeHandler
-from nba_stats_api.constants import BasketballReference, ALL_PLAY_TYPES, COMMON_FIELDS
+from nba_stats_api.constants import (BasketballReference, ALL_PLAY_TYPES,
+                                     COMMON_FIELDS, PLAYTYPE_COLUMNS,
+                                     VIDEO_MEASURES, VIDEO_ENDPOINT)
 comm = re.compile("<!--|-->")
 
 
@@ -155,10 +157,52 @@ def generate_excel_spreadsheet(player_stats, season):
     worksheet['A4'] = "Totals"
 
     cur_col = 1
-    for column in player_stats['Totals']:
-        worksheet.cell(row=5, column=cur_col, value=column)
-        value = player_stats['Totals'][column]
-        worksheet.cell(row=6, column=cur_col, value=value)
+    cur_row = 4
+    for stat_type in ["Totals", "PerGame", "Per100Possessions",
+                      "Per36", "Advanced", "Shooting"]:
+        worksheet.cell(row=cur_row, column=cur_col, value=stat_type)
+        cur_row += 1
+        for column in player_stats[stat_type]:
+            worksheet.cell(row=cur_row, column=cur_col, value=column)
+
+            value = player_stats[stat_type][column]
+            worksheet.cell(row=cur_row + 1, column=cur_col, value=value)
+            cur_col += 1
+        cur_col = 1
+        cur_row += 3
+
+    cur_row += 2
+    worksheet.cell(row=cur_row, column=cur_col, value="Play Type")
+    cur_col += 1
+    for column in PLAYTYPE_COLUMNS:
+        worksheet.cell(row=cur_row, column=cur_col, value=column)
         cur_col += 1
+    cur_row += 1
+    cur_col = 1
+    video_col = cur_col
+    video_row = cur_row
+
+    for play_type in ALL_PLAY_TYPES:
+        worksheet.cell(row=cur_row, column=cur_col, value=play_type)
+        cur_col += 1
+        for column in player_stats.get(play_type, []):
+            worksheet.cell(row=cur_row, column=cur_col, value=player_stats[play_type][column])
+            cur_col += 1
+            video_col = cur_col
+        cur_col = 1
+        cur_row += 1
+
+    video_col += 1
+    worksheet.cell(row=video_row, column=video_col, value="Video (NBA.com archive)")
+
+    for measure in VIDEO_MEASURES:
+        url = VIDEO_ENDPOINT.format(player_id=player_stats['BasicInfo']['PLAYER_ID'],
+                                    measure=measure, season=season,
+                                    season_type="Regular+Season",
+                                    )
+        worksheet.cell(row=video_row, column=video_col, value=VIDEO_MEASURES[measure])
+        worksheet.cell(row=video_row, column=video_col).hyperlink = url
+        video_row += 1
+
     player_name = player_stats['BasicInfo']['PLAYER_NAME']
     wkbook.save(f"outputs/{player_name}.xlsx")

@@ -1,5 +1,5 @@
 import requests
-from nba_stats_api.constants import PlayTypeBase
+from nba_stats_api.constants import PlayTypeBase, PLAYTYPE_COLUMNS
 
 
 class PlayTypeHandler:
@@ -8,6 +8,37 @@ class PlayTypeHandler:
         self.season_type = season_type
         self.base_url = PlayTypeBase
         self.json = None
+
+    def _convert_playtype_key_and_val(self, key, row):
+        value = row.get(key, None)
+
+        if key == "FREQ":
+            value = row['Time']
+        elif key == "PTS":
+            value = row['Points']
+        elif key == "FG%":
+            value = row['FG']
+        elif key == "EFG%":
+            value = row['aFG']
+        elif key == "FT FREQ":
+            value = row['FT']
+        elif key == "TO FREQ":
+            value = row['TO']
+        elif key == "SF FREQ":
+            value = row["SF"]
+        elif key == "AND ONE FREQ":
+            value = row["PlusOne"]
+        elif key == "SCORE FREQ":
+            value = row["Score"]
+        elif key == "Percentile":
+            worse_ppp = row['WorsePPP']
+            better_ppp = row['BetterPPP']
+            if isinstance(worse_ppp, int) and isinstance(better_ppp, int):
+                denominator = row['WorsePPP'] + row['BetterPPP']
+                if denominator != 0:
+                    value = (row['WorsePPP'] / denominator) * 100
+
+        return {key: value}
 
     def _convert_json(self, nba_json):
         new_json = {}
@@ -19,12 +50,8 @@ class PlayTypeHandler:
                        'PLAYER_NAME': player_name,
                        'TEAM_ID': row['TeamIDSID'],
                        'TEAM_ABBREVIATION': row['TeamNameAbbreviation']}
-            # TODO: Figure out wtf half of these are
-            for key in ['GP', 'Poss', 'Time', 'PPP', 'Points', 'FGM', 'FGA',
-                        'WorsePPP', 'BetterPPP', 'PossG', 'PPG', 'FGAG',
-                        'FGMG', 'FGmG', 'FGm', 'FG', 'aFG', 'FT', 'TO',
-                        'SF', 'PlusOne', 'Score']:
-                new_row[key] = row[key]
+            for key in PLAYTYPE_COLUMNS:
+                new_row.update(self._convert_playtype_key_and_val(key, row))
             new_json[new_row['PLAYER_ID']] = new_row
 
         return new_json

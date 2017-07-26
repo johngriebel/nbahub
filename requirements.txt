@@ -4,3 +4,4 @@ click
 beautifulsoup4
 html5lib
 openpyxl
+google-api-python-client
