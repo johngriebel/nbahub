@@ -10,6 +10,8 @@ PlayTypeBase = ("http://stats-prod.nba.com/wp-json/statscms/v1/synergy/player/?"
         "category={category}&limit=500&names=offensive&q=2501056&season={year}&"
         "seasonType={season_type}")
 
+GENERAL_STAT_TYPES = ["Totals", "PerGame", "Per100Possessions", "Per36", "Advanced", "Shooting"]
+
 Transition = "Transition"
 Isolation = "Isolation"
 PnRBallHandler = "PRBallHandler"

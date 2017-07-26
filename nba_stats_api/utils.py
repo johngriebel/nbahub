@@ -11,7 +11,8 @@ from nba_py.constants import PerMode
 from nba_stats_api.playtypes import PlayTypeHandler
 from nba_stats_api.constants import (BasketballReference, ALL_PLAY_TYPES,
                                      COMMON_FIELDS, PLAYTYPE_COLUMNS,
-                                     VIDEO_MEASURES, VIDEO_ENDPOINT)
+                                     VIDEO_MEASURES, VIDEO_ENDPOINT,
+                                     GENERAL_STAT_TYPES)
 comm = re.compile("<!--|-->")
 
 
@@ -158,8 +159,7 @@ def generate_excel_spreadsheet(player_stats, season):
 
     cur_col = 1
     cur_row = 4
-    for stat_type in ["Totals", "PerGame", "Per100Possessions",
-                      "Per36", "Advanced", "Shooting"]:
+    for stat_type in GENERAL_STAT_TYPES:
         worksheet.cell(row=cur_row, column=cur_col, value=stat_type)
         cur_row += 1
         for column in player_stats[stat_type]:
