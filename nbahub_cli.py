@@ -1,6 +1,6 @@
 import click
 import json
-from nba_stats_api.utils import update_all_player_stats, DecimalEncoder
+from nba_stats_api.utils import update_all_player_stats, DecimalEncoder, generate_excel_spreadsheet
 
 
 @click.group()
@@ -23,6 +23,8 @@ def update_all(season):
                 stat_file.write(json.dumps(player_stats_dict[player],
                                            cls=DecimalEncoder))
                 stat_file.close()
+
+            generate_excel_spreadsheet(this_player_stats, season=season)
 
 
 if __name__ == "__main__":

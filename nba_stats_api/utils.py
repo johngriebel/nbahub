@@ -4,6 +4,7 @@ import time
 import json
 from decimal import Decimal
 from bs4 import BeautifulSoup
+from openpyxl import Workbook
 from nba_py.player import PlayerShootingSplits, PlayerList
 from nba_py.league import PlayerStats
 from nba_py.constants import PerMode
@@ -145,3 +146,19 @@ def update_all_player_stats(season):
 
             time.sleep(2.5)
     return player_stats_dict
+
+
+def generate_excel_spreadsheet(player_stats, season):
+    wkbook = Workbook()
+    worksheet = wkbook.active
+    worksheet['A1'] = player_stats['BasicInfo']['PLAYER_NAME'] + f"{season} stats and video hub"
+    worksheet['A4'] = "Totals"
+
+    cur_col = 1
+    for column in player_stats['Totals']:
+        worksheet.cell(row=5, column=cur_col, value=column)
+        value = player_stats['Totals'][column]
+        worksheet.cell(row=6, column=cur_col, value=value)
+        cur_col += 1
+    player_name = player_stats['BasicInfo']['PLAYER_NAME']
+    wkbook.save(f"outputs/{player_name}.xlsx")

@@ -3,3 +3,4 @@ requests
 click
 beautifulsoup4
 html5lib
+openpyxl
