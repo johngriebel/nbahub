@@ -14,8 +14,8 @@ class ExcelGenerator:
         self.worksheet = self.workbook.active
         self.current_column = None
         self.current_row = None
-        self.video_row = None
-        self.video_column = None
+        self.video_row = 31
+        self.video_column = 17
         self.player_stats = player_stats
         self.season = season
 
