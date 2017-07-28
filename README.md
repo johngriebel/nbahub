@@ -10,7 +10,7 @@ nbahub requires python 3.6, so first ensure that it is installed. You can downlo
 #### Setup with venv ####
 1.) Create your virtual environment: 
 
-    `python3.6 -m venv nbahub-env`
+    python3.6 -m venv nbahub-env
 
 2.) Activate the environment:
 - for Windows: `nbahub-env\Scripts\activate.bat`
@@ -32,4 +32,4 @@ As of right now (version 0.1.2), `update_all` is the only command available, and
 
 
 ### Contact ###
-You can open an issue on this repository, send me an email (johnkgriebel@gmail.com), or find me on Twitter (@JohnGriebel).
+You can open an issue on this repository, send me an email (In my profile), or find me on Twitter (@JohnGriebel).
