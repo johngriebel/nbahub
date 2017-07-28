@@ -116,7 +116,7 @@ def update_all_player_stats(season):
     player_stats_dict = {}
     pids_file = open("completed_pids.txt", "r")
     completed_pids = json.loads(pids_file.read())
-    # completed_pids = [203518, 203112, 203500, 201167, 201582, 202332, 200746, 202730, 2754, 202329, 2365, 101187, 1626147, 203937, 201583, 203507, 2546, 201202, 2772, 201589, 201600, 201571, 202337, 1627758, 1627735, 2571, 200826, 203084, 2440, 203115, 101138, 201587, 201573, 203382, 203145, 203078, 1627736, 201563, 201158, 1627761, 1627733, 203461, 1627791, 202722, 201976, 202687, 202357, 204028, 202339, 202711, 101106, 1627762, 1626164, 202344, 202340, 201147, 1627763, 201166, 1626148, 201628, 1627759, 1627852, 203493, 203504, 202692, 202710, 203998, 101181, 203484, 203477, 203991, 201960, 1713, 203487, 201956, 1626161, 2199, 201163, 1627737, 1626176, 203902, 203546, 203903, 202708, 201954, 2555, 201144, 1626192, 1626188, 202326, 203496, 203459, 2037, 202348, 203109, 201967, 203552, 201939, 203584, 203076, 1627738, 202334, 201942, 203473, 1626155, 1627098, 203521, 2736, 1627767, 2564, 203476, 203915, 201962, 201609, 203083, 201162, 2399, 1627739, 201142, 204067, 1627740, 201961, 101145, 203954, 203898, 203516, 201936, 203957, 202702, 200770, 202324, 1627770, 1626245, 101109, 1627812, 1627827, 1627854, 203095, 200751, 204025, 101112, 201568, 204038, 1627868, 201188, 2200, 200752, 1627771, 202087, 202331, 1627875, 1626780, 201959, 1938, 203497, 203462, 203932, 201569, 101162, 1626203, 203924, 1626170, 201980, 203110, 101123, 203210, 201145, 201933, 203120, 1627773, 203501, 201935, 203090]
+
     for per_mode in [PerMode.Totals, PerMode.PerGame,
                      PerMode.Per100Possessions, PerMode.Per36]:
         print(f"Working on {per_mode}")
@@ -185,60 +185,3 @@ def update_all_player_stats(season):
         print(("Num completed", len(completed_pids)))
         raise e
     return player_stats_dict
-
-
-def generate_excel_spreadsheet(player_stats, season):
-    wkbook = Workbook()
-    worksheet = wkbook.active
-    worksheet['A1'] = player_stats['BasicInfo']['PLAYER_NAME'] + f"{season} stats and video hub"
-    worksheet['A4'] = "Totals"
-
-    cur_col = 1
-    cur_row = 4
-    for stat_type in GENERAL_STAT_TYPES:
-        worksheet.cell(row=cur_row, column=cur_col, value=stat_type)
-        cur_row += 1
-        for column in player_stats[stat_type]:
-            worksheet.cell(row=cur_row, column=cur_col, value=column)
-
-            value = player_stats[stat_type][column]
-            worksheet.cell(row=cur_row + 1, column=cur_col, value=value)
-            cur_col += 1
-        cur_col = 1
-        cur_row += 3
-
-    cur_row += 2
-    worksheet.cell(row=cur_row, column=cur_col, value="Play Type")
-    cur_col += 1
-    for column in PLAYTYPE_COLUMNS:
-        worksheet.cell(row=cur_row, column=cur_col, value=column)
-        cur_col += 1
-    cur_row += 1
-    cur_col = 1
-    video_col = cur_col
-    video_row = cur_row
-
-    for play_type in ALL_PLAY_TYPES:
-        worksheet.cell(row=cur_row, column=cur_col, value=play_type)
-        cur_col += 1
-        for column in player_stats.get(play_type, []):
-            worksheet.cell(row=cur_row, column=cur_col, value=player_stats[play_type][column])
-            cur_col += 1
-            video_col = cur_col
-        cur_col = 1
-        cur_row += 1
-
-    video_col += 1
-    worksheet.cell(row=video_row, column=video_col, value="Video (NBA.com archive)")
-
-    for measure in VIDEO_MEASURES:
-        url = VIDEO_ENDPOINT.format(player_id=player_stats['BasicInfo']['PLAYER_ID'],
-                                    measure=measure, season=season,
-                                    season_type="Regular+Season",
-                                    )
-        worksheet.cell(row=video_row, column=video_col, value=VIDEO_MEASURES[measure])
-        worksheet.cell(row=video_row, column=video_col).hyperlink = url
-        video_row += 1
-
-    player_name = player_stats['BasicInfo']['PLAYER_NAME']
-    wkbook.save(f"outputs/{player_name}.xlsx")

@@ -46,17 +46,18 @@ class ExcelGenerator:
             self._set_current_cell_value(value=stat_type,
                                          font=self.header_font)
             self.current_row += 1
-            for header_column in self.player_stats[stat_type]:
-                self._set_current_cell_value(value=header_column,
-                                             font=self.header_font,
-                                             fill=self.header_fill,
-                                             border=self.all_borders)
-                value = self.player_stats[stat_type][header_column]
-                self._set_current_cell_value(value=value,
-                                             row=self.current_row + 1,
-                                             fill=self.row_fill,
-                                             border=self.all_borders)
-                self.current_column += 1
+            if self.player_stats.get(stat_type) is not None:
+                for header_column in self.player_stats[stat_type]:
+                    self._set_current_cell_value(value=header_column,
+                                                 font=self.header_font,
+                                                 fill=self.header_fill,
+                                                 border=self.all_borders)
+                    value = self.player_stats[stat_type][header_column]
+                    self._set_current_cell_value(value=value,
+                                                 row=self.current_row + 1,
+                                                 fill=self.row_fill,
+                                                 border=self.all_borders)
+                    self.current_column += 1
             self.current_row += 3
             self.current_column = 1
         self.current_row += 2
