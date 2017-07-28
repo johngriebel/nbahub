@@ -1,7 +1,6 @@
-https://github.com/seemethere/nba_py/archive/master.zip
+nba_py
 requests
 click
 beautifulsoup4
 html5lib
 openpyxl
-google-api-python-client

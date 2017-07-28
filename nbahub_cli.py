@@ -1,3 +1,4 @@
+#! python
 import click
 import json
 from nba_stats_api.utils import update_all_player_stats, DecimalEncoder

@@ -1,13 +1,11 @@
 # README #
 
 
-### What is this repository for? ###
+nbahub is a simple command line application that (restfully) scrapes nba.com and basketball-reference.com for NBA statistics, and aggregates them in a format of your choosing. For now options are limited, but more will be coming soon!
 
-* Helping Duncan with daily stats updates.
+### Setup ###
 
-### How do I get set up? ###
-
-* Instuctions to come.
+Simple and easy: `pip install nbahub`
 
 ### Who do I talk to? ###
 
