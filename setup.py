@@ -13,7 +13,7 @@ setup(
                       "html5lib==0.999999999",
                       "openpyxl==2.4.8"],
     version="0.1.2",
-    license="MIT",
+    license="BSD 3-clause",
     description="A CLI application that gathers NBA stats from various sources and aggregates them.",
     author="John Griebel",
     author_email="johnkgriebel@gmail.com",
