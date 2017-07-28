@@ -1,8 +1,10 @@
 #! python
-import click
 import json
+
+import click
+
 from nba_stats_api.utils import update_all_player_stats, DecimalEncoder
-from excel_handler import ExcelGenerator
+from nbahub.excel_handler import ExcelGenerator
 
 
 @click.group()

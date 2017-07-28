@@ -114,8 +114,6 @@ def get_advanced_stats(bbref_id, season="2016-17"):
 
 def update_all_player_stats(season):
     player_stats_dict = {}
-    pids_file = open("completed_pids.txt", "r")
-    completed_pids = json.loads(pids_file.read())
 
     for per_mode in [PerMode.Totals, PerMode.PerGame,
                      PerMode.Per100Possessions, PerMode.Per36]:
@@ -126,8 +124,6 @@ def update_all_player_stats(season):
         for row in player_stats.overall():
             player_id = row['PLAYER_ID']
             new_row = convert_dict(row)
-            if player_id in completed_pids:
-                continue
             if player_id not in player_stats_dict:
                 player_stats_dict[player_id] = {'BasicInfo': extract_common_info(row)}
 
@@ -140,8 +136,6 @@ def update_all_player_stats(season):
         play_type_handler.fetch_json(play_type)
 
         for player_id in play_type_handler.json:
-            if player_id in completed_pids:
-                continue
             player_name = play_type_handler.json[player_id]['PLAYER_NAME']
             if player_id not in player_stats_dict:
                 print(f"{player_name} has entries for PlayType Statistics, but not"
@@ -154,34 +148,24 @@ def update_all_player_stats(season):
     player_list = PlayerList(season=season,
                              only_current=1)
 
-    try:
-        with open("bbref_id_map.json", "r") as bbref_file:
-            bbref_id_map = json.loads(bbref_file.read())
-            for player in player_list.info():
-                player_id = player['PERSON_ID']
-                if player_id in completed_pids:
-                    continue
-                player_name = player['DISPLAY_FIRST_LAST']
-                print(f"Working on shooting for {player_name}")
-                shooting = get_shooting_stats(player_id=player_id,
-                                              season=season)
-                if player_id in player_stats_dict:
-                    player_stats_dict[player_id]['Shooting'] = convert_dict(shooting)
-                    calc_extra_shooting_stats(player_stats_dict[player_id])
+    with open("bbref_id_map.json", "r") as bbref_file:
+        bbref_id_map = json.loads(bbref_file.read())
+        for player in player_list.info():
+            player_id = player['PERSON_ID']
+            player_name = player['DISPLAY_FIRST_LAST']
+            print(f"Working on shooting for {player_name}")
+            shooting = get_shooting_stats(player_id=player_id,
+                                          season=season)
+            if player_id in player_stats_dict:
+                player_stats_dict[player_id]['Shooting'] = convert_dict(shooting)
+                calc_extra_shooting_stats(player_stats_dict[player_id])
 
-                    bbref_id = bbref_id_map[str(player_id)]
-                    print(f"Working on advanced for {player_name}")
-                    advanced_stats = get_advanced_stats(bbref_id, season="2016-17")
-                    player_stats_dict[player_id]['Advanced'] = advanced_stats
-                    completed_pids.append(player_id)
-                else:
-                    print(f"It appears {player_name} hasn't registered any statistics for this season.")
+                bbref_id = bbref_id_map[str(player_id)]
+                print(f"Working on advanced for {player_name}")
+                advanced_stats = get_advanced_stats(bbref_id, season="2016-17")
+                player_stats_dict[player_id]['Advanced'] = advanced_stats
+            else:
+                print(f"It appears {player_name} hasn't registered any statistics for this season.")
 
-                time.sleep(1)
-    except Exception as e:
-        pids_file = open("completed_pids.txt", "w")
-        pids_file.write(json.dumps(completed_pids))
-        pids_file.close()
-        print(("Num completed", len(completed_pids)))
-        raise e
+            time.sleep(1)
     return player_stats_dict
