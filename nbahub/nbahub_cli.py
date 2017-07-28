@@ -37,5 +37,5 @@ def update_all(season, format, output):
             excel_generator.generate_workbook(path=output)
 
 
-if __name__ == "__main__":
+def main():
     cli()
