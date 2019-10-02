@@ -6,7 +6,7 @@ setup(
     packages=['nbahub', "nba_stats_api"],
     package_data={'nba_stats_api': ["data/bbref_id_map.json"]},
     install_requires=["nba_py",
-                      "requests==2.18.1",
+                      "requests==2.20.0",
                       "click==6.7",
                       "beautifulsoup4==4.6.0",
                       # Weird...
